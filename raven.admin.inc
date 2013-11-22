@@ -72,6 +72,22 @@ function raven_settings_form($form, &$form_state) {
     '#description' => t('If a login fails, they will be redirected to this page.'),
     '#required' => FALSE,
   );
+  
+  	// Role to be assigned to the user when account is created for the first time
+  	
+  	$roles = user_roles(TRUE);
+  	unset($roles[DRUPAL_AUTHENTICATED_RID]);
+  	// Do not allow to delegate users to administator role. Let's keep this
+  	// privilege to users with 'Administer permissions' permission only.
+  	unset($roles[variable_get('user_admin_role', 0)]);
+  	
+	$form['account']['raven_auto_roles'] = array(
+	    '#type' => 'checkboxes',
+	    '#title' => t('Auto assign roles'),
+	    '#options' => $roles,
+	    '#default_value' => variable_get('raven_auto_roles'),
+	    '#description' => t('The roles that will be assigned to users the first time they access the site via Raven.'),
+	);
 
   return system_settings_form($form);
 }
