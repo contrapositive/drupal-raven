@@ -535,6 +535,7 @@ function user_raven_login_register($name) {
         'mail' => $name . '@cam.ac.uk',
         'status' => $status,
         'access' => REQUEST_TIME,
+        'roles' => variable_get('raven_auto_roles'),
       );
       drupal_alter('raven_register', $edit, $account);
       watchdog('raven', 'New user: @name (@email).', array(
