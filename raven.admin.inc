@@ -73,8 +73,19 @@ function raven_settings_form($form, &$form_state) {
     '#required' => FALSE,
   );
   
+  // Log the user out and then redirect them to this page if user visits raven/logout
+  $form['raven_logout_redirect'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Logout'),
+    '#field_prefix' => $base_url . '/',
+    '#default_value' => variable_get('raven_logout_redirect'),
+    '#description' => t('The path to the page that you would like to redirect the user to after they logout by visiting \'@raven_logout_path\'.', array(
+    	'@raven_logout_path' => RAVEN_LOGOUT_PATH,
+    )),
+    '#required' => FALSE,
+  );
+  
   	// Role to be assigned to the user when account is created for the first time
-  	
   	$roles = user_roles(TRUE);
   	unset($roles[DRUPAL_AUTHENTICATED_RID]);
   	// Do not allow to delegate users to administator role. Let's keep this

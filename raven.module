@@ -6,6 +6,7 @@ const USER_LOGOUT_PATH = 'user/logout';
 const USER_REGISTER_PATH = 'user/register';
 const USER_PASSWORD_PATH = 'user/password';
 const RAVEN_LOGIN_PATH = 'raven/login';
+const RAVEN_LOGOUT_PATH = 'raven/logout';
 const RAVEN_AUTH_PATH = 'raven/auth';
 const RAVEN_CONFIG_PATH = 'admin/config/people/raven';
 const RAVEN_HELP_PATH = 'admin/help#raven';
@@ -63,6 +64,13 @@ function raven_menu() {
     'title' => 'Raven log in',
     'access callback' => 'user_is_anonymous',
     'page callback' => 'raven_login',
+    'type' => MENU_CALLBACK,
+  );
+  
+  $items[RAVEN_LOGOUT_PATH] = array(
+    'title' => 'Raven log in',
+    'access callback' => TRUE,
+    'page callback' => 'raven_logout',
     'type' => MENU_CALLBACK,
   );
 
@@ -172,7 +180,7 @@ function raven_login($redirect = NULL) {
   $params['url'] = url(RAVEN_AUTH_PATH, array('absolute' => TRUE));
   $params['desc'] = variable_get('raven_website_description', variable_get('site_name', $base_url));
   $params['params'] = urlencode(url($redirect, array('absolute' => TRUE)));
-  
+
   $parameters = array();
   foreach ($params as $key => $val) {
     $parameters[] = $key . '=' . utf8_encode($val);
@@ -314,6 +322,23 @@ function raven_response_status_name($code) {
     default:
       return 'Unknown status code';
   }
+}
+/**
+ * Send the user to the Raven logout page.
+ */
+function raven_logout() {
+	global $user;
+	global $base_url;
+	watchdog('user', 'raven: Session closed for %name.', array('%name' => $user->name));
+	module_invoke_all('user_logout', $user);
+	// Destroy the current session, and reset $user to the anonymous user.
+	session_destroy();
+	// redirect to logout message, if path is null then send to root
+	if (variable_get('raven_logout_redirect') != null && variable_get('raven_logout_redirect') != '') {
+		drupal_goto(drupal_strtolower(drupal_get_path_alias(variable_get('raven_logout_redirect'))));
+	} else {
+		drupal_goto($base_url);
+	}
 }
 
 /**
