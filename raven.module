@@ -159,21 +159,28 @@ function raven_login($redirect = NULL) {
   global $base_url;
 
   if ($redirect === NULL) {
-    $redirect = ($_SERVER['HTTP_REFERER'] != NULL ? $_SERVER['HTTP_REFERER'] : $base_url);
+	if ($_GET['destination'] != '') {
+	    $redirect = drupal_strtolower(drupal_get_path_alias($_GET['destination']));
+    } else if ($_SERVER['HTTP_REFERER'] != NULL) {
+    	$redirect = $_SERVER['HTTP_REFERER'];
+    } else {
+	    $redirect = $base_url;
+    }
   }
 
   $params['ver'] = '2';
   $params['url'] = url(RAVEN_AUTH_PATH, array('absolute' => TRUE));
   $params['desc'] = variable_get('raven_website_description', variable_get('site_name', $base_url));
   $params['params'] = urlencode(url($redirect, array('absolute' => TRUE)));
-
+  
   $parameters = array();
   foreach ($params as $key => $val) {
     $parameters[] = $key . '=' . utf8_encode($val);
   }
   $parameters = implode('&', $parameters);
 
-  drupal_goto('https://raven.cam.ac.uk/auth/authenticate.html?' . $parameters, array(), 303);
+  header('Location: https://raven.cam.ac.uk/auth/authenticate.html?'.$parameters);
+  exit();
 }
 
 /**
