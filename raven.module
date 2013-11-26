@@ -560,15 +560,27 @@ function user_raven_login_register($name) {
       }
       $account = drupal_anonymous_user();
       $account->is_raven_user = TRUE;
-      $edit = array(
-        'name' => $name,
-        'pass' => user_password(),
-        'init' => $name . '@cam.ac.uk',
-        'mail' => $name . '@cam.ac.uk',
-        'status' => $status,
-        'access' => REQUEST_TIME,
-        'roles' => variable_get('raven_auto_roles'),
-      );
+      if (variable_get('raven_auto_roles') != null) {
+	      $edit = array(
+	        'name' => $name,
+	        'pass' => user_password(),
+	        'init' => $name . '@cam.ac.uk',
+	        'mail' => $name . '@cam.ac.uk',
+	        'status' => $status,
+	        'access' => REQUEST_TIME,
+	        'roles' => variable_get('raven_auto_roles'),
+	      );
+      } else {
+	      $edit = array(
+	        'name' => $name,
+	        'pass' => user_password(),
+	        'init' => $name . '@cam.ac.uk',
+	        'mail' => $name . '@cam.ac.uk',
+	        'status' => $status,
+	        'access' => REQUEST_TIME,
+	      );
+
+      }
       drupal_alter('raven_register', $edit, $account);
       watchdog('raven', 'New user: @name (@email).', array(
         '@name' => $edit['name'],
